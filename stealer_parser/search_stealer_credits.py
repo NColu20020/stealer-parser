@@ -3,6 +3,12 @@
 Some files contain credits to the stealer that harvested the data. It usually
 is an ASCII art banner or a link to a Telegram channel.
 """
+
+#Purpose: Detects the type of stealer malware based on ASCII art or specific strings found within files.
+#Key Function:
+#search_stealer_name: Searches for stealer names (like redline, raccoon, etc.) within text files using regex patterns and ASCII headers. If a known stealer name is detected, it returns the name.
+#ASCII Headers: Contains ASCII art banners associated with common stealers (e.g., DCRAT, META, RACCOON), which help identify the stealer based on the contents of a file.
+
 import re
 
 from stealer_parser.models import StealerNameType

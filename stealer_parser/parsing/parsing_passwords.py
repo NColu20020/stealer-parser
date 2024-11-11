@@ -65,6 +65,13 @@ follows:
 - `AllPasswords_list.txt` ;
 - `_AllPasswords_list.txt`.
 """
+#Purpose: Processes the extracted tokens to organize password data.
+#Functions:
+    #parse_user_block: Parses user data blocks, organizing extracted lines related to software, host, username, and password.
+    #parse_passwords: Combines lines into credential records.
+#Works with the lexer to extract data related to credentials, organizing the parsed tokens into coherent user data blocks.
+
+
 from json import dumps
 from pathlib import Path
 from re import Match, Pattern, compile, search

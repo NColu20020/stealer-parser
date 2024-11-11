@@ -1,7 +1,10 @@
 """Data model to define compromised systems found in leaks."""
+
+#Purpose: Defines the data model for a compromised system found in logs.
+# Class: System
+# Attributes: Includes fields for storing system information like machine_id, computer_name, hardware_id, machine_user, ip_address, country, and log_date.
+# This class helps represent each compromised system, capturing metadata for tracking and organizing information about affected machines.
 from dataclasses import dataclass
-
-
 @dataclass
 class System:
     """Class defining a compromised system information.

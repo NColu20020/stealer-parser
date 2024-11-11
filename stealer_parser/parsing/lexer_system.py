@@ -1,3 +1,8 @@
+#Purpose: Defines token types and grammar rules for parsing system information in logs.
+#Key Tokens:
+    #Includes tokens for fields like UID_PREFIX, COMPUTER_NAME_PREFIX, HWID_PREFIX, USERNAME_PREFIX, IP_PREFIX, COUNTRY_PREFIX, and LOG_DATE_PREFIX.
+    # Responsible for lexing system-related information, breaking the log data into tokens that correspond to system attributes.
+
 """Token list and grammar rules definition.
 
 ```

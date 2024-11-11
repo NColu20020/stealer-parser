@@ -1,4 +1,11 @@
 """Infostealer logs parser."""
+
+#Purpose: The core file for executing the main logic of the parser.
+#Key Functions:
+    #read_archive: Opens and processes different archive formats (.rar, .zip, .7z), returning an ArchiveWrapper object to interact with the archive’s contents.
+    #main: The main function to handle argument parsing, logger setup, archive reading, processing, and output. It reads the archive, processes it, and then saves the parsed data.
+#Usage: This file controls the program flow from reading an archive to outputting parsed data.
+
 from argparse import Namespace
 from io import BytesIO
 from pathlib import Path
