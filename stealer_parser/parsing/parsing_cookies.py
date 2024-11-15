@@ -3,53 +3,43 @@ import logging
 
 logger = logging.getLogger("StealerParser")
 
-def parse_cookie_file(file_path):
-    """Parses a cookie file and returns a list of Cookie objects.
-
-    Parameters
-    ----------
-    file_path : str
-        Path to the cookie file to parse.
-
-    Returns
-    -------
-    list of Cookie
-        A list of Cookie objects parsed from the file.
-    """
-    # Add a logger message to confirm when this function is called
-    logger.info(f"Parsing cookie file: {file_path}")
+def parse_cookie_file(filename: str, text: str = None) -> list[Cookie]:
+    """Parse cookie content and return a list of Cookie objects."""
+    logger.info(f"Parsing cookie file: {filename}")
     cookies = []
+    
+    # If text is not provided, read from file
+    if text is None:
+        with open(filename, 'r', encoding='utf-8') as f:
+            text = f.read()
+    
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                # Skip empty lines
-                if not line.strip():
-                    continue
-
-                # Split line into fields
-                fields = line.strip().split('\t')
-                if len(fields) == 7:  # Ensure there are exactly 7 fields
-                    domain, flag, path, secure, expiration, name, value = fields
-
-                    # Convert expiration timestamp to an integer
-                    expiration_timestamp = int(expiration)
-
-                    # Create a Cookie object and add it to the list
+        for line in text.splitlines():
+            line = line.strip()
+            if not line or line.startswith('\00'):  # Skip empty lines and Mac OS metadata
+                continue
+                
+            # Split by any number of whitespace characters
+            fields = [f for f in line.split() if f]
+            
+            if len(fields) >= 7:
+                try:
                     cookie = Cookie(
-                        domain=domain,
-                        flag=flag,
-                        path=path,
-                        secure=secure,
-                        expiration_timestamp=expiration_timestamp,
-                        name=name,
-                        value=value
+                        domain=fields[0],
+                        flag=fields[1],
+                        path=fields[2],
+                        secure=fields[3],
+                        expiration_timestamp=int(fields[4]),
+                        name=fields[5],
+                        value=' '.join(fields[6:])  # Join remaining fields for value
                     )
                     cookies.append(cookie)
-                    # Debug log to check each parsed cookie
-                    print(f"Parsed cookie: {cookie}")
-                else:
-                    print(f"Unexpected format in line: {line}")
+                except (ValueError, IndexError) as e:
+                    # Just log warning and continue instead of raising error
+                    logger.warning(f"Invalid cookie format in {filename}. Line: {line}")
+                    continue
+            
     except Exception as e:
-        print(f"Failed to parse cookie file {file_path}: {e}")
-
+        logger.error(f"Failed to parse cookie file {filename}: {e}")
+        
     return cookies

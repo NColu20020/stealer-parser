@@ -43,6 +43,20 @@ class Credential:
     filepath: str | None = None
     stealer_name: StealerNameType | None = None
 
+    def to_dict(self) -> dict:
+        """Convert to dictionary for JSON serialization."""
+        return {
+            "software": self.software,
+            "host": self.host,
+            "username": self.username,
+            "password": self.password,
+            "domain": self.domain,
+            "local_part": self.local_part,
+            "email_domain": self.email_domain,
+            "filepath": self.filepath,
+            "stealer_name": self.stealer_name.value if self.stealer_name else None
+        }
+
 
 NORM_TEXT_PATTERN: re.Pattern[str] = re.compile(r"[\[\]\"']")
 EMAIL_PATTERN: re.Pattern[str] = re.compile(r"\b(\S+)@(\S+\.\S+)\b")

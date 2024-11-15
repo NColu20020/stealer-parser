@@ -4,7 +4,7 @@
 # Class: System
 # Attributes: Includes fields for storing system information like machine_id, computer_name, hardware_id, machine_user, ip_address, country, and log_date.
 # This class helps represent each compromised system, capturing metadata for tracking and organizing information about affected machines.
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 @dataclass
 class System:
     """Class defining a compromised system information.
@@ -35,3 +35,23 @@ class System:
     ip_address: str | None = None
     country: str | None = None
     log_date: str | None = None
+
+    def to_dict(self) -> dict:
+        """Convert System object to dictionary."""
+        return {
+            "machine_id": self.machine_id,
+            "computer_name": self.computer_name,
+            "hardware_id": self.hardware_id,
+            "machine_user": self.machine_user,
+            "ip_address": self.ip_address,
+            "country": self.country,
+            "log_date": self.log_date
+        }
+
+# @dataclass
+# class SystemData:
+#     """System data container."""
+#     system: System | None = None
+#     stealer_type: StealerNameType = StealerNameType.UNKNOWN
+#     credentials: list[Credential] = field(default_factory=list)
+#     cookies: list[Cookie] = field(default_factory=list)

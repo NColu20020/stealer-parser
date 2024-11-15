@@ -11,3 +11,4 @@ from .lexer_system import SystemToken, tokenize_system
 from .parser import LogsParser
 from .parsing_passwords import get_browser_name, parse_passwords
 from .parsing_system import parse_system, retrieve_ip_only
+from .parsing_cookies import parse_cookie_file

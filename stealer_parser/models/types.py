@@ -1,6 +1,7 @@
 """Type hints to support development process."""
 from datetime import datetime
 from typing import Literal, TypeAlias
+from enum import Enum
 
 __all__ = [
     "JSONValueType",
@@ -26,6 +27,8 @@ JSONObjectType: TypeAlias = dict[str, JSONValueType]
 JSONType: TypeAlias = JSONObjectType | JSONArrayType
 
 # NOTE: To be extended if more infostealers are handled.
-StealerNameType: TypeAlias = Literal[
-    "redline", "stealc", "lummac2", "meta", "raccoon", "dcrat"
-]
+class StealerNameType(Enum):
+    """Stealer types."""
+    UNKNOWN = "unknown"
+    RACCOON = "raccoon"
+    REDLINE = "redline"

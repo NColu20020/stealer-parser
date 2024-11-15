@@ -80,11 +80,11 @@ from typing import Callable, TypeAlias
 from verboselogs import VerboseLogger
 
 from stealer_parser.helpers import dump_to_file
-from stealer_parser.models import (
+from stealer_parser.models.credential import (
     Credential,
     extract_credential_domain_name,
     normalize_credential_text,
-    split_credential_email,
+    split_credential_email
 )
 from stealer_parser.ply.src.ply.lex import LexToken
 
@@ -182,13 +182,7 @@ def parse_software_line(parser: LogsParser, credential: Credential) -> bool:
 
 
 def parse_host_line(parser: LogsParser, credential: Credential) -> bool:
-    """Parse host data (website visited when user's data was stolen).
-
-    host_line   : HOST_PREFIX NEWLINE
-                | HOST_PREFIX SPACE NEWLINE
-                | HOST_PREFIX SPACE entry NEWLINE
-
-    """
+    """Parse host data (website visited when user's data was stolen)."""
     if parser.eat("HOST_PREFIX"):
         if parser.eat("SPACE"):
             credential.host = parse_entry(parser)
@@ -201,13 +195,7 @@ def parse_host_line(parser: LogsParser, credential: Credential) -> bool:
 
 
 def parse_user_line(parser: LogsParser, credential: Credential) -> bool:
-    """Parse username or email address.
-
-    user_line   : USER_PREFIX NEWLINE
-                | USER_PREFIX SPACE NEWLINE
-                | USER_PREFIX SPACE entry NEWLINE
-
-    """
+    """Parse username or email address."""
     if parser.eat("USER_PREFIX"):
         if parser.eat("SPACE"):
             credential.username = parse_entry(parser)

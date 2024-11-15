@@ -15,30 +15,23 @@ class EnhancedJSONEncoder(JSONEncoder):
 
     def default(self: Any, obj: Any) -> Any:
         """Handle custom types JSON serialization."""
+        if hasattr(obj, 'to_dict'):
+            return obj.to_dict()
         if is_dataclass(obj):
             return asdict(obj)
         if isinstance(obj, (datetime, date)):
             return obj.isoformat()
         if isinstance(obj, set):
             return list(obj)
+        if isinstance(obj, Path):
+            return str(obj)
         return super().default(obj)
 
 
 def dump_to_file(
     logger: VerboseLogger, filename: str, content: str | Any
 ) -> None:
-    """Save data to local file.
-
-    Parameters
-    ----------
-    logger : verboselogs.VerboseLogger
-        The program's logger.
-    filebame : str
-        The file to write to.
-    content : str or Any
-        The data to write.
-
-    """
+    """Save data to local file."""
     filepath = Path(filename)
 
     try:
@@ -46,14 +39,13 @@ def dump_to_file(
             filepath.parent.mkdir(parents=True)
 
         if not isinstance(content, str):
-            filepath.write_text(
-                dumps(
-                    content,
-                    ensure_ascii=False,
-                    cls=EnhancedJSONEncoder,
-                    indent=4,
-                )
+            content_json = dumps(
+                content,
+                ensure_ascii=False,
+                cls=EnhancedJSONEncoder,
+                indent=4,
             )
+            filepath.write_text(content_json)
         else:
             filepath.write_text(content)
 
@@ -64,7 +56,7 @@ def dump_to_file(
         logger.info(f"Successfully wrote '{str(filepath)}'.")
 
 
-def parse_options(description: str) -> Namespace:
+def parse_options(description: str = "Parse infostealer logs archives.") -> Namespace:
     """Parse command-line arguments.
 
     Parameters
@@ -119,35 +111,19 @@ def parse_options(description: str) -> Namespace:
 
 
 def init_logger(
-    name: str,
-    verbosity_level: int,
+    verbosity_level: int = 0,
+    name: str = "StealerParser",
     formatting: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 ) -> VerboseLogger:
-    """Initialize the program's logger.
-
-    Parameters
-    ----------
-    name : str
-        The logger's name.
-    verbosity_level : int
-        Verbosity log level.
-    formatting : str, optional
-        The log format.
-
-    Returns
-    -------
-    verboselogs.VerboseLogger
-        The logger.
-
-    """
-    levels: list[str] = ["INFO", "VERBOSE", "DEBUG", "SPAM"]
+    """Initialize the program's logger."""
+    levels = ["INFO", "VERBOSE", "DEBUG", "SPAM"]
     logger = VerboseLogger(name)
-
+    
     coloredlogs.install(
         logger=logger,
-        level=levels[max(min(verbosity_level, len(levels) - 1), 0)],
+        level=levels[min(verbosity_level, len(levels) - 1)],
         fmt=formatting,
         isatty=True,
     )
-
+    
     return logger

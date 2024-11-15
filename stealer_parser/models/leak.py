@@ -4,62 +4,27 @@
 - Compromised systems found in the leak
 - Credentials found in the leak, sorted by system.
 """
+#Purpose: Structures the parsed data of a leak, organizing metadata, compromised systems, and credentials.
+#Classes:
+#SystemData: Represents data associated with a single compromised system, with methods like add_stealer_name to label credentials with the infostealer name.
+#Leak: Represents the overall structure of a leak, storing the archive’s filename and a list of SystemData objects for all compromised systems found in the archive.
+#This module organizes parsed data, grouping credentials by system and enabling easier aggregation and export.
+
 from dataclasses import dataclass, field
-
-from .credential import Credential
-from .system import System
-from .types import StealerNameType
-
-
-@dataclass
-class SystemData:
-    """Class defining a system's leaked data.
-
-    Attributes
-    ----------
-    system : leak : stealer_parser.models.system.System, optional
-        The compromised system information.
-    credentials : list of stealer_parser.models.credential.Credential, optional
-        The leaked credentials.
-
-    Methods
-    -------
-    add_stealer_name(stealer_name)
-        Add stealer name to every credentials.
-
-    """
-
-    system: System | None = None
-    credentials: list[Credential] = field(default_factory=list)
-
-    def add_stealer_name(self, stealer_name: StealerNameType) -> None:
-        """Add stealer name to every credentials.
-
-        Intended to be called once the whole system folder has been processed
-        since the name can be found after the password file was parsed.
-
-        Parameters
-        ----------
-        stealer_name : stealer_parser.models.types.StealerType
-            The stealer name.
-
-        """
-        for credential in self.credentials:
-            credential.stealer_name = stealer_name
-
+from .stealer_log import StealerLog
 
 @dataclass
 class Leak:
-    """Class defining a leak (metadata and content).
+    """Class defining a leak's content."""
+    filename: str
+    stealer_logs: list[StealerLog] = field(default_factory=list)
 
-    Attributes
-    ----------
-    filename : str
-        The archive file name.
-    systems_data : list of stealer_parser.models.leak.SystemData, optional
-        Credentials grouped by compromised system.
-
-    """
-
-    filename: str | None = None
-    systems_data: list[SystemData] = field(default_factory=list)
+    def to_dict(self) -> dict:
+        """Convert to dictionary for JSON serialization."""
+        return {
+            "filename": self.filename,
+            "stealer_logs": [
+                stealer_log.to_dict()
+                for stealer_log in self.stealer_logs
+            ]
+        }

@@ -69,38 +69,23 @@ def read_archive(
 
 
 def main() -> None:
-    """Program's entrypoint."""
-    args: Namespace = parse_options("Parse infostealer logs archives.")
-    logger: VerboseLogger = init_logger(
-        name="StealerParser", verbosity_level=args.verbose
-    )
-    archive: ArchiveWrapper | None = None
+    """Main function."""
+    args: Namespace = parse_options()
+    logger = init_logger(args.verbose)
 
     try:
-        leak = Leak(filename=args.filename)
+        with open(args.filename, "rb") as buffer:
+            archive = read_archive(buffer, args.filename, args.password)
+            leak = process_archive(logger, archive)
+            dump_to_file(
+                logger,
+                args.outfile or f"{Path(args.filename).stem}.json",
+                leak.to_dict()
+            )
 
-        with open(args.filename, "rb") as file_handle:
-            with BytesIO(file_handle.read()) as buffer:
-                archive = read_archive(buffer, args.filename, args.password)
-                process_archive(logger, leak, archive)
-
-    except (
-        FileNotFoundError,
-        NotImplementedError,
-        OSError,
-        PermissionError,
-    ) as err:
-        logger.error(f"Failed reading {args.filename}: {err}")
-
-    except RuntimeError as err:
-        logger.error(f"Failed parsing {args.filename}: {err}")
-
-    else:
-        dump_to_file(logger, args.outfile, leak)
-
-    finally:
-        if archive:
-            archive.close()
+    except Exception as err:
+        logger.critical(f"{err.__class__.__name__}: {err}")
+        raise
 
 
 if __name__ == "__main__":
